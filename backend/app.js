@@ -1,15 +1,36 @@
-// Load environment variables first
-require('dotenv/config'); 
 
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const cors = require('cors');
 
-// Use API_URL after loading dotenv
-const api = process.env.API_URL; 
+app.use(cors());
+app.options('*', cors())
+
+// API_URL loading dotenv
+require('dotenv/config'); 
+
+// Middleware
+app.use(bodyParser.json());
+app.use(morgan('tiny'));
+
+
+//Routers
+const productRouter = require('./routers/products');
+const categoriesRoutes = require('./routers/categories');
+// const usersRoutes = require('./routes/users');
+// const ordersRoutes = require('./routes/orders');
+
+
+const api = process.env.API_URL;
+
+app.use(`${api}/products`, productRouter);
+app.use(`${api}/categories`, categoriesRoutes);
+// app.use(`${api}/users`, usersRoutes);
+// app.use(`${api}/orders`, ordersRoutes);
+
 
 // Database connection
 mongoose.connect(process.env.CONNECTION_STRING, {
@@ -22,53 +43,6 @@ mongoose.connect(process.env.CONNECTION_STRING, {
     console.log(error);
 })
 
-// Middleware
-app.use(bodyParser.json());
-app.use(morgan('tiny'));
-
-// Product schema and model
-const productSchema = new Schema({
-    name: String,
-    image: String,
-    countInStock: {
-        type: Number,
-        require: true
-    }
-});
-
-const Product = mongoose.model('product', productSchema);
-
-// Routes
-//GET request
-app.get(`${api}/products`, async (req, res) => {
-    const productList = await Product.find();
-    if(!productList) {
-        res.status(500).json({
-            success: false
-        })
-    }
-    res.send(productList);  
-});
-
-//POST Request
-app.post(`${api}/products`, (req, res) => {
-    const product = new Product({
-        name: req.body.name,
-        image: req.body.image,
-        countInStock: req.body.countInStock
-    });
-
-    product.save()
-    .then((createdProduct) => {
-        res.status(201).json(createdProduct);
-    })
-    .catch((error) => {
-        res.status(500).json({
-            error: error,
-            success: false
-        });
-    });
-});
 
 // Start server
 app.listen(3000, () => {
