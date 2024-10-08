@@ -21,17 +21,17 @@ app.use(errorHandler);
 const productRouter = require('./routers/products');
 const categoriesRoutes = require('./routers/categories');
 const usersRoutes = require('./routers/users');
+const ordersRoutes = require('./routers/orders');
 
 // API base URL
 const api = process.env.API_URL;
 app.use(`${api}/products`, productRouter);
 app.use(`${api}/categories`, categoriesRoutes);
 app.use(`${api}/users`, usersRoutes);
+app.use(`${api}/orders`, ordersRoutes);
 
 // Database connection
 mongoose.connect(process.env.CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     dbName: 'eshop_db',
 })
 .then(() => console.log('Database connection is ready ...'))
