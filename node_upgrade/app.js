@@ -9,7 +9,7 @@ const imageRoute = require('./routes/images');
 const app = express();
 
 app.use(bodyParser.json());
-//Make upload public to be accessed
+// make upload public to be accessed
 app.use('/uploads', express.static('uploads'));
 
 app.use("/posts", postsRoute);
