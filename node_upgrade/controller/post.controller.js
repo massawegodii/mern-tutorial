@@ -27,7 +27,7 @@ function save(req, res){
     }
     
     models.Category.findByPk(req.body.category_id).then(result => {
-        if(result !== null){
+        if(result !== null) {
             models.Post.create(post).then(result => {
                 res.status(201).json({
                     message: "Post created successfully",
